@@ -122,4 +122,16 @@ float3 GetBRDFwithLamPort(Surface surf, DirectionalLight dirlit, GI gi)
     //return float3(dirlit.attenuation, dirlit.attenuation, dirlit.attenuation); // debug: fading
 }
 
+
+// 间接brdf, 反射用.
+float3 GetIndirectBRDF(Surface surf, float3 diffuse, float3 specular)
+{
+    float3 brdf_diffuse = GetBRDFDiffuse(surf);
+    float3 brdf_specular = GetBRDFSpecular(surf);
+    float3 reflection = specular * brdf_specular;
+    reflection /= surf.roughness * surf.roughness + 1;
+    float fresnelitem = surf.fresnelStrength * Pow4(1.0 - saturate(dot(surf.normal, surf.view)));  // 近似菲涅尔项
+    return brdf_diffuse * diffuse + reflection;
+}
+
 #endif

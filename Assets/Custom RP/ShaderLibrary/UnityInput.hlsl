@@ -32,6 +32,8 @@ float4 unity_ProbeVolumeMin;
 
 // 后处理中，用于指示纹理是否需要flip
 float4 _ProjectionParams;
+
+float4 unity_SpecCube0_HDR;
 CBUFFER_END
 
 float4x4 unity_MatrixVP;

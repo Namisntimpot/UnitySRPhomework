@@ -8,6 +8,7 @@ Shader "Custom/Standard Lit"
             // 金属度等（这里的实现应该不是完全的金属工作流）.
         _Metallic("Metallic", Range(0.0, 1.0)) = 0.0
         _Smoothness("Smoothness", Range(0.0, 1.0)) = 0.5
+        _Fresnel("Fresnel", Range(0, 1)) = 1  // 菲涅尔项
 
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Src Blend", Float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Dst Blend", Float) = 0

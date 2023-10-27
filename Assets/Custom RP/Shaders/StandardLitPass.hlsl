@@ -48,11 +48,11 @@ float4 frag(v2f input) : SV_TARGET
     // 计算光照.
     /// 形成表面属性.
     float3 view = normalize(_WorldSpaceCameraPos - input.positionWS);
-    Surface surf = GetSurface(input.positionWS, input.positionCS, albedo, view, input.normalWS, _Metallic, _Smoothness);
+    Surface surf = GetSurface(input.positionWS, input.positionCS, albedo, view, input.normalWS, _Metallic, _Smoothness, _Fresnel);
     // 平行光
     int count = GetDirectionalLightCount();
     GI gi = GetGI(GI_FRAGMENT_DATA(input), surf);
-    float3 finalrgb = gi.diffuse * GetBRDFDiffuse(surf);
+    float3 finalrgb = GetIndirectBRDF(surf, gi.diffuse, gi.specular);   // 获取包括反射在内的间接光照
     for (int i = 0; i < count; i++)
     {
         DirectionalLight dirlit = GetDirectionalLight(i, surf);

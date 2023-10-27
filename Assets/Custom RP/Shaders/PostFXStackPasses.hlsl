@@ -127,7 +127,7 @@ float4 BloomVerticalPassFragment(Varying input) : SV_TARGET
 // 金字塔自顶向下combine倒回去用的.
 float4 BloomCombinePassFragment(Varying input) : SV_TARGET
 {
-    float3 lowRes = _BloomBicubicUpsampling ? GetSourceBicubic(input.screenUV).rgb : GetSourceColor(input.screenUV);
+    float3 lowRes = _BloomBicubicUpsampling ? GetSourceBicubic(input.screenUV).rgb : GetSourceColor(input.screenUV).rgb;
     float3 highRes = GetSource2Color(input.screenUV).rgb;
     return float4((lowRes * _BloomIntensity + highRes), 1.0);
 }

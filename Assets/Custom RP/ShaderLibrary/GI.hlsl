@@ -4,6 +4,8 @@
 #include "UnityInput.hlsl"
 #include "Surface.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/EntityLighting.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ImageBasedLighting.hlsl"
+
 
 #if defined(LIGHTMAP_ON)
     #define GI_ATTRIBUTE_DATA float2 lightMapUV : TEXCOORD1;     // a2v中的成员
@@ -25,9 +27,14 @@ SAMPLER(samplerunity_Lightmap);
 TEXTURE3D_FLOAT(unity_ProbeVolumeSH);
 SAMPLER(samplerunity_ProbeVolumeSH);
 
+// environment texture, 立方体贴图
+TEXTURECUBE(unity_SpecCube0);
+SAMPLER(samplerunity_SpecCube0);
+
 struct GI
 {
     float3 diffuse;   // 只能处理漫反射
+    float3 specular;  // 反射全局光照（在环境贴图上面采样）
 };
 
 float3 SampleLightmap(float2 lightMapUV)
@@ -82,10 +89,21 @@ float3 SampleLightProbes(Surface surfWS)
 #endif
 }
 
+float3 SampleEnvironmen(Surface surfWS)
+{
+    float3 uvw = reflect(-surfWS.view, surfWS.normal);
+    float miplevel = PerceptualRoughnessToMipmapLevel(surfWS.perceptual_roughness);
+    float4 environment = SAMPLE_TEXTURECUBE_LOD(
+		unity_SpecCube0, samplerunity_SpecCube0, uvw, miplevel
+	);  // 在立方体贴图上面采样.
+    return DecodeHDREnvironment(environment, unity_SpecCube0_HDR);
+}
+
 GI GetGI(float2 lightMapUV, Surface surfWS)
 {
     GI gi;
     gi.diffuse = SampleLightmap(lightMapUV) + SampleLightProbes(surfWS);
+    gi.specular = SampleEnvironmen(surfWS);
     return gi;
 }
 

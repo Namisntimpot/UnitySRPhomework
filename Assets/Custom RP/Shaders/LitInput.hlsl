@@ -8,6 +8,7 @@ float _Cutoff;
 float _Metallic;
 float _Smoothness;
 float4 _EmissionColor;
+float _Fresnel;
 
 CBUFFER_END
 

@@ -131,7 +131,10 @@ public partial class CameraRenderer
         ShaderTagId unLitShaderTagID = new ShaderTagId("SRPDefaultUnlit");  //默认无光照的shadertag，用于以此形成pass的子集.
         DrawingSettings drawingSettings = new DrawingSettings(unLitShaderTagID, sortingSettings)
         {
-            perObjectData = PerObjectData.Lightmaps | PerObjectData.LightProbe | PerObjectData.LightProbeProxyVolume
+            perObjectData = PerObjectData.Lightmaps | 
+                            PerObjectData.LightProbe | 
+                            PerObjectData.LightProbeProxyVolume | 
+                            PerObjectData.ReflectionProbes
         };   // 之后，通过这个drawingset唤起的drawcall的会给静态物体定义 LIGHTMAP_ON shader_feature, 而动态物体没有这个定义，就使用probe.
 
         // 上面是不透明物体的UnLit，下面同时渲染不透明物体的 CustomStandardLit.
