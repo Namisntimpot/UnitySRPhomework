@@ -39,7 +39,8 @@ Varying MetaPassVertex(Attributes input)
 float4 MetaPassFragment(Varying input) : SV_TARGET
 {
     float4 baseColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.baseUV) * _BaseColor;
-    Surface surf = GetSurface(0.0, 0.0, baseColor, 1.0, 1.0, _Metallic, _Smoothness, _Fresnel);  // 防止view 和 normal 在 normalize的时候除以0.
+    float metallic = GetMetallic(input.baseUV);
+    Surface surf = GetSurface(0.0, 0.0, baseColor, 1.0, 1.0, 1.0, metallic, _Smoothness, _Fresnel);  // 防止view 和 normal 在 normalize的时候除以0.
     float3 specular = GetBRDFSpecular(surf);
     float3 diffuse = GetBRDFDiffuse(surf);
     float4 meta = 0.0;

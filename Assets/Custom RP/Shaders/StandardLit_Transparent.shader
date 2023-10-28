@@ -5,13 +5,21 @@ Shader "Custom/Standard Lit Transparent"
         [MainTexture] _BaseMap("Texture", 2D) = "white" {}
         [MainColor] _BaseColor("Base Color", Color) = (0.5,0.5,0.5,1)
 
+        [Toggle(_Normal_Map)] _NormalMapToggle("Using Normal Map", Float) = 0
+        [NoScaleOffset] _NormalMap("Normal",2D) = "bump"{}
+        _NormalScale("Normal Scale", Range(0, 1)) = 1
+
             // 只是为了让lightmap正常运转.
         [HideInInspector] _MainTex("Texture for Lightmap", 2D) = "white" {}
         [HideInInspector] _Color("Color for Lightmap", Color) = (0.5, 0.5, 0.5, 1.0)
 
             // 金属度等（这里的实现应该不是完全的金属工作流）.
         _Metallic("Metallic", Range(0.0, 1.0)) = 0.0
+        [Toggle(_Metallic_Map)] _MetallicMapToggle("Using Metallic Map", Float) = 0
+        [NoScaleOffset] _MetallicMap("Metallic Map", 2D) = "white" {}
+
         _Smoothness("Smoothness", Range(0.0, 1.0)) = 0.5
+        _Fresnel("Fresnel", Range(0, 1)) = 1  // 菲涅尔项
 
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Src Blend", Float) = 5
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Dst Blend", Float) = 10
@@ -44,6 +52,8 @@ Shader "Custom/Standard Lit Transparent"
                 #pragma shader_feature _ALPHACLIPPING
                 #pragma shader_feature _SHADOW_CLIP
                 #pragma shader_feature _SHADOW_DITHER
+                #pragma shader_feature _Normal_Map
+                #pragma shader_feature _Metallic_Map
                 #pragma vertex vert
                 #pragma fragment frag
                 #include "./ShadowCasterPass.hlsl"
@@ -57,6 +67,8 @@ Shader "Custom/Standard Lit Transparent"
 
                 HLSLPROGRAM
                 #pragma target 3.5
+                #pragma shader_feature _Normal_Map
+                #pragma shader_feature _Metallic_Map
                 #pragma vertex MetaPassVertex
                 #pragma fragment MetaPassFragment
                 #include "MetaPass.hlsl"
@@ -77,6 +89,8 @@ Shader "Custom/Standard Lit Transparent"
                 #pragma shader_feature _ALPHACLIPPING
                 #pragma shader_feature _SHADOW_CLIP
                 #pragma shader_feature _SHADOW_DITHER
+                #pragma shader_feature _Normal_Map
+                #pragma shader_feature _Metallic_Map
                 #pragma multi_compile _ _DIRECTIONAL_PCF3 _DIRECTIONAL_PCF5 _DIRECTIONAL_PCF7  // 根据关键字来选择不同的“版本”，_ for no keyword..?
                 #pragma multi_compile _ _CASCADE_BLEND_SOFT _CASCADE_BLEND_DITHER              // 切换层间过度方法         
                 #pragma vertex vert

@@ -11,6 +11,7 @@ struct Surface
     float4 color;
     float3 view;   // 视线方向.
     float3 normal; // 这里的normal应该保证标准化.
+    float3 interpolatedNormal;  // 用作阴影的normalBias，本质上是旧的没有使用阴影贴图的normal
     float depth;   // 相机视角下的z坐标 的 相反数.
     // 切线，副切线...
     
@@ -29,7 +30,8 @@ struct Surface
     float dither;
 };
 
-Surface GetSurface(float3 positionWS, float4 positionCS, float4 color, float3 view, float3 normal, float metallic, float smoothness, float fresnel)
+Surface GetSurface(float3 positionWS, float4 positionCS, float4 color, float3 view, 
+                   float3 normal, float3 interpolatedNormal, float metallic, float smoothness, float fresnel)
 {
     // 充当了构造函数的作用.
     Surface surf;
@@ -37,6 +39,7 @@ Surface GetSurface(float3 positionWS, float4 positionCS, float4 color, float3 vi
     surf.color = color;
     surf.view = normalize(view);
     surf.normal = normalize(normal);
+    surf.interpolatedNormal = normalize(interpolatedNormal);
     surf.depth = -TransformWorldToView(positionWS).z;
     surf.metallic = metallic;
     surf.smoothness = smoothness;

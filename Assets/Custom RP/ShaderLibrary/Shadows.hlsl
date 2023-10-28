@@ -90,9 +90,9 @@ CascadeShadowData GetCascadeShadowData(Surface surfWS)
         ret.strengthFading = 0;    // 超出最外层cullingSphere以及距离超过maxDistance的都应该去掉阴影!
     }
 #if defined(_CASCADE_BLEND_DITHER)  // 是抖动过渡
-		else if (ret.cascadeBlending < surfWS.dither) {    // 让它到下一级采样去!
-			i += 1;
-		}
+	else if (ret.cascadeBlending < surfWS.dither) {    // 让它到下一级采样去!
+	    i += 1;
+	}
 #endif
 #if !defined(_CASCADE_BLEND_SOFT)  // 不是soft过渡
     ret.cascadeBlending = 1.0;
@@ -134,14 +134,14 @@ float GetDirectionalShadowAttenuation(DirectionalLightShadowData dirShadowData, 
     if(dirShadowData.strength <= 0.0)   //按理说不应该存在...
         return 1.;
     // normal bias, 相当于在采样前做了displacement...
-    float3 normalBias = surf.normal * _CascadeDatas[cascadeShadowData.cascadeIndex].y * dirShadowData.normalBias;
+    float3 normalBias = surf.interpolatedNormal * _CascadeDatas[cascadeShadowData.cascadeIndex].y * dirShadowData.normalBias;
     float3 positionSTS = mul(_DirectionalShadowMatrices[dirShadowData.tileIndex], float4(surf.position + normalBias, 1.0)).xyz;  // 变换到对应光源的阴影图坐标
     float shadow = FilterDirectionalShadow(positionSTS);
 #if defined(_CASCADE_BLEND_SOFT)
     if (cascadeShadowData.cascadeBlending < 1.0)
     {
         // 要在两层之间过度.特别的，是与下一层过渡。因为最外层的cascadeblending一定是1.
-        normalBias = surf.normal * _CascadeDatas[cascadeShadowData.cascadeIndex + 1].y * dirShadowData.normalBias;
+        normalBias = surf.interpolatedNormal * _CascadeDatas[cascadeShadowData.cascadeIndex + 1].y * dirShadowData.normalBias;
         positionSTS = mul(_DirectionalShadowMatrices[dirShadowData.tileIndex + 1], float4(surf.position + normalBias, 1.0)).xyz;
         shadow = lerp(FilterDirectionalShadow(positionSTS), shadow, cascadeShadowData.cascadeBlending);
     }

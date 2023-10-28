@@ -13,6 +13,7 @@ struct a2v
 {
     float3 positionOS : POSITION;
     float3 normalOS : NORMAL;
+    float4 tangentOS : TANGENT;
     float2 baseMapUV : TEXCOORD0;
     GI_ATTRIBUTE_DATA
 };
@@ -22,6 +23,7 @@ struct v2f
     float4 positionCS : SV_POSITION;
     float3 positionWS : V2F_POSITION_WS;
     float3 normalWS : V2F_NORMAL_WS;
+    float4 tangentWS : V2F_TANGENT_WS;
     float2 baseMapUV : V2F_BASE_UV;
     GI_VARYING_DATA
 };
@@ -37,6 +39,7 @@ v2f vert(a2v input)
     output.positionCS = TransformWorldToHClip(positionWS); // 这个函数是在SpaceTransforms.hlsl里的, vs没有包含进来.
     output.baseMapUV = input.baseMapUV * _BaseMap_ST.xy + _BaseMap_ST.zw;
     output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+    output.tangentWS = float4(TransformObjectToWorldDir(input.tangentOS.xyz), input.tangentOS.w);
     GI_TRANSFER_DATA(input, output)
     return output;
 }
@@ -47,8 +50,13 @@ float4 frag(v2f input) : SV_TARGET
     float4 albedo = _BaseColor * baseMapColor;
     // 计算光照.
     /// 形成表面属性.
+    /// 获取金属度(可能有贴图).
+    float metallic = GetMetallic(input.baseMapUV);
+    /// 获取法线（可能有贴图）.
+    float3 normalWS = GetNormalWS(input.baseMapUV, input.normalWS, input.tangentWS);
+    
     float3 view = normalize(_WorldSpaceCameraPos - input.positionWS);
-    Surface surf = GetSurface(input.positionWS, input.positionCS, albedo, view, input.normalWS, _Metallic, _Smoothness, _Fresnel);
+    Surface surf = GetSurface(input.positionWS, input.positionCS, albedo, view, normalWS, input.normalWS, metallic, _Smoothness, _Fresnel);
     // 平行光
     int count = GetDirectionalLightCount();
     GI gi = GetGI(GI_FRAGMENT_DATA(input), surf);
