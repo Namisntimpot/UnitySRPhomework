@@ -41,6 +41,7 @@ Shader "Custom/Standard Lit"
                 Name "Shadow Caster"
                 Tags {"LightMode" = "ShadowCaster"}
                 ColorMask 0
+                Cull[_Cull]
                 
                 HLSLPROGRAM
                 #pragma target 3.5

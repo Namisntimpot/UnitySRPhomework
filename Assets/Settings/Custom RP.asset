@@ -17,11 +17,11 @@ MonoBehaviour:
     distanceFade: 0.1
     directional:
       atlasSize: 1024
-      filter: 2
+      filter: 3
       cascadeCount: 4
-      cascadeRatio1: 0.3
-      cascadeRatio2: 0.4
-      cascadeRatio3: 0.5
+      cascadeRatio1: 0.2
+      cascadeRatio2: 0.3
+      cascadeRatio3: 0.4
       cascadeFade: 0.1
       cascadeBlendMode: 2
   postFXSettings: {fileID: 11400000, guid: 6d1b05194ba004b4082d8211b0f3e713, type: 2}
